@@ -1,10 +1,5 @@
-
-
-
-
-
-
-
+server:
+  port: 8008
 
 #数据源:
 spring:
@@ -12,4 +7,4 @@ spring:
     url: jdbc:mysql://47.107.79.61:3306/czq
     username: root
     password: root
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
