@@ -24,7 +24,7 @@ public class UserController {
         User user = userService.getUserByAccount(account);
         if (user == null) {
             logger.error("用户不存在");
-            result.setMessage("用户不存在");
+            result.setMsg("用户不存在");
         } else {
 
         }
