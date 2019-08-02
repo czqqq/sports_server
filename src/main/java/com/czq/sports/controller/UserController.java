@@ -37,6 +37,13 @@ public class UserController {
         return result;
     }
 
+    @GetMapping("/logout")
+    public BaseResult logout() {
+//        todo
+        return new BaseResult();
+    }
+
+
     @GetMapping("/get_info")
     public BaseResult getInfo() {
         BaseResult result = new BaseResult();
