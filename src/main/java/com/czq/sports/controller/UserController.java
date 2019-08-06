@@ -34,10 +34,13 @@ public class UserController {
             result.setMsg("用户不存在");
             result.setCode(ResultCode.NOTUSER);
         }
+        Map<String, String> data = new HashMap<>(1);
+        data.put("token", "super_admin");
+        result.setData(data);
         return result;
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public BaseResult logout() {
 //        todo
         return new BaseResult();
