@@ -4,10 +4,12 @@ import com.czq.sports.utils.BaseResult;
 import com.czq.sports.excel.DownloadData;
 import com.czq.sports.excel.UploadData;
 import com.czq.sports.excel.UploadDataListener;
+import com.czq.sports.utils.ResultCode;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+
 import com.alibaba.excel.EasyExcel;
 
 import java.io.IOException;
@@ -20,14 +22,20 @@ import java.util.List;
 public class ExcelController {
 
     @RequestMapping("uploadExcel")
-    public BaseResult uploadExcel(@RequestParam("file") MultipartFile file){
-        if(file == null){
-            System.out.println("上传excel错误，文件为空");
+    public BaseResult uploadExcel(@RequestParam("file") MultipartFile file) {
+        BaseResult result = new BaseResult();
+        if (file == null) {
+            result.setMsg("上传excel错误，文件为空");
+            result.setCode(ResultCode.FAILURE);
+        } else {
+            try {
+//                EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().doRead();
+                EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().headRowNumber(7).doRead();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-
-
-        return new BaseResult();
+        return result;
     }
 
     /**

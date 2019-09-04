@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 模板的读取类
@@ -19,7 +20,7 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
     /**
      * 每隔5条存储数据库，实际使用中可以3000条，然后清理list ，方便内存回收
      */
-    private static final int BATCH_COUNT = 5;
+    private static final int BATCH_COUNT = 100;
     List<UploadData> list = new ArrayList<UploadData>();
 
     @Override
@@ -30,6 +31,12 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
             saveData();
             list.clear();
         }
+    }
+
+    @Override
+    public void invokeHeadMap(Map<Integer, String> headMap, AnalysisContext context) {
+        LOGGER.info("解析到一条头数据:{}", JSON.toJSONString(headMap));
+//        super.invokeHeadMap(headMap, context);
     }
 
     @Override
