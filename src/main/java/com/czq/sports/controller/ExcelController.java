@@ -31,9 +31,9 @@ public class ExcelController {
             result.setCode(ResultCode.FAILURE);
         } else {
             try {
-//                EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().doRead();
-//            todo    EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().headRowNumber(7).doRead();
-                Workbook wb = WorkbookFactory.create(file.getInputStream());
+//  todo method easyExcel              EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().doRead();
+// todo method poi                Workbook wb = WorkbookFactory.create(file.getInputStream());
+                EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().headRowNumber(7).doRead();
             } catch (IOException e) {
                 e.printStackTrace();
             }

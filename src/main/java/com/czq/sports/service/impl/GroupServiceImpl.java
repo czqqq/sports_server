@@ -1,8 +1,8 @@
 package com.czq.sports.service.impl;
 
-import com.czq.sports.mapper.ClassesMapper;
-import com.czq.sports.pojo.Classes;
-import com.czq.sports.service.ClassesService;
+import com.czq.sports.mapper.GroupMapper;
+import com.czq.sports.pojo.Group;
+import com.czq.sports.service.GroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,22 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
-public class ClassesServiceImpl implements ClassesService {
+public class GroupServiceImpl implements GroupService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
-    private ClassesMapper classesMapper;
+    private GroupMapper groupMapper;
 
     @Override
-    public Classes getClassesByName(String name) {
+    public Group getGroupByName(String name) {
         if (!StringUtils.hasText(name)) {
             logger.error("查找班级name为空");
             return null;
         }
-        return classesMapper.findByName(name);
-    }
-
-    @Override
-    public int insertClasses(Classes classes) {
-        return classesMapper.insertClasses(classes);
+        return groupMapper.findByName(name);
     }
 }
