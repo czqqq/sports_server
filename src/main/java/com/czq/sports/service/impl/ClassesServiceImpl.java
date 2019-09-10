@@ -28,4 +28,9 @@ public class ClassesServiceImpl implements ClassesService {
     public int insertClasses(Classes classes) {
         return classesMapper.insertClasses(classes);
     }
+
+    @Override
+    public int updateClasses(Classes classes) {
+        return classesMapper.updateClasses(classes);
+    }
 }

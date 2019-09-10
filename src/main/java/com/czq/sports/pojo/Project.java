@@ -11,5 +11,6 @@ public class Project {
     private Byte status;
     private Integer limit;
     private Long duration;
+    private Byte type;
     private Date ct;
 }

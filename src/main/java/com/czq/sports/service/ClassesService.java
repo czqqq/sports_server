@@ -6,4 +6,6 @@ public interface ClassesService {
     Classes getClassesByName(String name);
 
     int insertClasses(Classes classes);
+
+    int updateClasses(Classes classes);
 }

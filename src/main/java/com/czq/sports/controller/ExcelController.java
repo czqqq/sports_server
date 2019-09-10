@@ -1,19 +1,15 @@
 package com.czq.sports.controller;
 
-import com.czq.sports.utils.BaseResult;
+import com.alibaba.excel.EasyExcel;
 import com.czq.sports.excel.DownloadData;
 import com.czq.sports.excel.UploadData;
 import com.czq.sports.excel.UploadDataListener;
+import com.czq.sports.utils.BaseResult;
 import com.czq.sports.utils.ResultCode;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-
-import com.alibaba.excel.EasyExcel;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +29,7 @@ public class ExcelController {
             try {
 //  todo method easyExcel              EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().doRead();
 // todo method poi                Workbook wb = WorkbookFactory.create(file.getInputStream());
+
                 EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().headRowNumber(7).doRead();
             } catch (IOException e) {
                 e.printStackTrace();

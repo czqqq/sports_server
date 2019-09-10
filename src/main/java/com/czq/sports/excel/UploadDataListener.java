@@ -2,19 +2,19 @@ package com.czq.sports.excel;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.alibaba.excel.read.metadata.holder.ReadSheetHolder;
 import com.alibaba.fastjson.JSON;
 import com.czq.sports.pojo.Classes;
 import com.czq.sports.pojo.Group;
+import com.czq.sports.pojo.Student;
+import com.czq.sports.service.ClassesService;
 import com.czq.sports.service.GroupService;
+import com.czq.sports.service.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 模板的读取类
@@ -26,14 +26,65 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
 
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private ClassesService classesService;
+    @Autowired
+    private StudentService studentService;
+
+    private Integer classesId;
+    private Map<String,Integer> signCount;
 
     private static final int BATCH_COUNT = 100;
-    List<UploadData> list = new ArrayList<UploadData>();
+    private List<Student> list = new ArrayList<Student>();
 
     @Override
     public void invoke(UploadData data, AnalysisContext context) {
         LOGGER.info("解析到一条数据:{}", JSON.toJSONString(data));
-        list.add(data);
+
+        if (signCount == null) {
+            signCount = new HashMap<>();
+        }
+
+
+        byte sex = data.getGroupName().contains("男生") ? (byte)0 : (byte)1;
+
+        String athletes1 = data.getAthletes1();
+        String athletes2 = data.getAthletes2();
+
+        if ("18,19,30,31,".indexOf(context.readRowHolder().getRowIndex() + ",") > 0) {
+            //团体项目
+        } else {
+            //个人项目
+
+            if (athletes1.equals(athletes2)) {
+                LOGGER.error("导入报名表失败，单个项目不能报名两次（同一行的两个名字一样）");
+                return;
+            }
+            List<String> strings = new ArrayList<>(2);
+            strings.add(athletes1);
+            strings.add(athletes2);
+
+            strings.forEach(athletes -> {
+                if (StringUtils.hasText(athletes)) {
+                    Integer count = signCount.get(athletes);
+                    if (count == null) {
+                        signCount.put(athletes, 1);
+                    } else if (count == 1) {
+                        signCount.put(athletes, 2);
+                    }else {
+                        LOGGER.error("导入报名表失败，一个人不能报超过两个项目");
+                        return;
+                    }
+                    Student s = new Student();
+                    s.setSex(sex);
+                    s.setName(athletes1);
+                    s.setCid(this.classesId);
+                    s.setCt(new Date());
+                    list.add(s);
+                }
+            });
+        }
+
         if (list.size() >= BATCH_COUNT) {
             saveData();
             list.clear();
@@ -52,7 +103,7 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
 
 
             //学生报名单
-            /**
+            /*
              * 分组：	高职			报名单位：	09技师模具
              * 教练：
              * 联系人：				联系电话：	13859930921
@@ -96,17 +147,28 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
                 }
             }
 
-
+            Classes classes1 = classesService.getClassesByName(classes.getName());
+            if (classes1 == null) {
+                classesService.insertClasses(classes);
+            } else {
+                classes.setId(classes1.getId());
+                classesService.updateClasses(classes);
+            }
+            this.classesId = classes.getId();
         } else if (sheetIndex == 1) {
             //教师报名单
         }
-        LOGGER.info("解析到一条头数据:{}", JSON.toJSONString(headMap));
+
+
+        LOGGER.info("解析到一行头数据:{}", JSON.toJSONString(headMap));
 //        super.invokeHeadMap(headMap, context);
     }
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
         saveData();
+        signCount = null;
+        list.clear();
         LOGGER.info("所有数据解析完成！");
     }
 
@@ -115,6 +177,7 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
      */
     private void saveData() {
         LOGGER.info("{}条数据，开始存储数据库！", list.size());
+        studentService.insertBatch(list);
         LOGGER.info("存储数据库成功！");
     }
 }
