@@ -1,5 +1,7 @@
 package com.czq.sports.controller;
 
+import com.czq.sports.excel.POIUtil;
+import com.czq.sports.utils.BaseResult;
 import com.alibaba.excel.EasyExcel;
 import com.czq.sports.excel.DownloadData;
 import com.czq.sports.excel.UploadData;
@@ -29,7 +31,8 @@ public class ExcelController {
             try {
 //  todo method easyExcel              EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().doRead();
 // todo method poi                Workbook wb = WorkbookFactory.create(file.getInputStream());
-
+//                List<String[]> resultr = POIUtil.readExcel(file);
+//                System.out.println(resultr);
                 EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().headRowNumber(7).doRead();
             } catch (IOException e) {
                 e.printStackTrace();

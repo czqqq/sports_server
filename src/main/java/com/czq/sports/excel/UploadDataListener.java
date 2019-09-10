@@ -12,6 +12,8 @@ import com.czq.sports.service.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -21,6 +23,7 @@ import java.util.*;
  *
  * @author Jiaju Zhuang
  */
+@Configuration
 public class UploadDataListener extends AnalysisEventListener<UploadData> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UploadDataListener.class);
 
