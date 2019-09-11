@@ -12,4 +12,5 @@ public class Student {
     private Integer cid;
     private Date ct;
     private Byte sex;
+    private Integer gid;
 }

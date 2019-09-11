@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface GroupMapper {
-    @Select("SELECT * FROM group WHERE name = #{name}")
+    @Select("SELECT * FROM `group` WHERE name = #{name}")
     Group findByName(@Param("name") String name);
 
 }

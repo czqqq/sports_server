@@ -12,7 +12,6 @@ import com.czq.sports.service.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -23,7 +22,7 @@ import java.util.*;
  *
  * @author Jiaju Zhuang
  */
-@Configuration
+@Component
 public class UploadDataListener extends AnalysisEventListener<UploadData> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UploadDataListener.class);
 
@@ -34,7 +33,7 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
     @Autowired
     private StudentService studentService;
 
-    private Integer classesId;
+    private Classes classes;
     private Map<String,Integer> signCount;
 
     private static final int BATCH_COUNT = 100;
@@ -47,25 +46,33 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
         if (signCount == null) {
             signCount = new HashMap<>();
         }
+        int row = context.readRowHolder().getRowIndex();
+        if (row > 31) {
+            signCount.clear();
+            return;
+        }
 
-
-        byte sex = data.getGroupName().contains("男生") ? (byte)0 : (byte)1;
+        byte sex = data.getGroupName().indexOf("男子") > 0 ? (byte)0 : (byte)1;
 
         String athletes1 = data.getAthletes1();
         String athletes2 = data.getAthletes2();
 
-        if ("18,19,30,31,".indexOf(context.readRowHolder().getRowIndex() + ",") > 0) {
-            //团体项目
+        if (",18,19,30,31,".contains(","+row + ",")) {
+            //团体项目 todo
         } else {
             //个人项目
 
-            if (athletes1.equals(athletes2)) {
-                LOGGER.error("导入报名表失败，单个项目不能报名两次（同一行的两个名字一样）");
-                return;
+            List<String> strings = new ArrayList<>();
+            if (athletes1 != null) {
+                strings.add(athletes1);
             }
-            List<String> strings = new ArrayList<>(2);
-            strings.add(athletes1);
-            strings.add(athletes2);
+            if (athletes2 != null) {
+                if (strings.contains(athletes2)) {
+                    LOGGER.error("导入报名表失败，单个项目不能报名两次（同一行的两个名字一样）");
+                    return;
+                }
+                strings.add(athletes2);
+            }
 
             strings.forEach(athletes -> {
                 if (StringUtils.hasText(athletes)) {
@@ -80,20 +87,25 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
                     }
                     Student s = new Student();
                     s.setSex(sex);
-                    s.setName(athletes1);
-                    s.setCid(this.classesId);
+                    s.setName(athletes);
+                    s.setCid(this.classes.getId());
+                    s.setGid(this.classes.getGid());
                     s.setCt(new Date());
                     list.add(s);
                 }
             });
         }
 
-        if (list.size() >= BATCH_COUNT) {
+     /*   if (list.size() >= BATCH_COUNT) {
             saveData();
             list.clear();
-        }
+        }*/
     }
 
+
+    /**
+     * 解析头
+     */
     @Override
     public void invokeHeadMap(Map<Integer, String> headMap, AnalysisContext context) {
 
@@ -102,7 +114,13 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
 
         if (sheetIndex == 0) {
 
-            Classes classes = new Classes();
+            if (headMap.size() != 6) {
+                return;  //todo 我也不知道为啥
+            }
+
+            if (this.classes == null) {
+                this.classes = new Classes();
+            }
 
 
             //学生报名单
@@ -149,15 +167,17 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
                     classes.setTel(tel);
                 }
             }
-
-            Classes classes1 = classesService.getClassesByName(classes.getName());
-            if (classes1 == null) {
-                classesService.insertClasses(classes);
-            } else {
-                classes.setId(classes1.getId());
-                classesService.updateClasses(classes);
+            if(rowIndex == 5){
+                Classes classes1 = classesService.getClassesByName(classes.getName());
+                if (classes1 == null) {
+                    classes.setCt(new Date());
+                    classesService.insertClasses(classes);
+                } else {
+                    classes.setId(classes1.getId());
+                    classes.setCt(new Date());
+                    classesService.updateClasses(classes);
+                }
             }
-            this.classesId = classes.getId();
         } else if (sheetIndex == 1) {
             //教师报名单
         }
@@ -180,7 +200,9 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
      */
     private void saveData() {
         LOGGER.info("{}条数据，开始存储数据库！", list.size());
+        studentService.deleteByCid(this.classes.getId());
         studentService.insertBatch(list);
+        this.classes = null;
         LOGGER.info("存储数据库成功！");
     }
 }

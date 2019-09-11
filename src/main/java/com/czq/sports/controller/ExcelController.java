@@ -1,13 +1,14 @@
 package com.czq.sports.controller;
 
-import com.czq.sports.excel.POIUtil;
-import com.czq.sports.utils.BaseResult;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import com.czq.sports.excel.DownloadData;
 import com.czq.sports.excel.UploadData;
 import com.czq.sports.excel.UploadDataListener;
 import com.czq.sports.utils.BaseResult;
 import com.czq.sports.utils.ResultCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,9 @@ import java.util.List;
 @RequestMapping("/upload")
 public class ExcelController {
 
+    @Autowired
+    private UploadDataListener uploadDataListener;
+
     @RequestMapping("uploadExcel")
     public BaseResult uploadExcel(@RequestParam("file") MultipartFile file) {
         BaseResult result = new BaseResult();
@@ -29,11 +33,17 @@ public class ExcelController {
             result.setCode(ResultCode.FAILURE);
         } else {
             try {
-//  todo method easyExcel              EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().doRead();
-// todo method poi                Workbook wb = WorkbookFactory.create(file.getInputStream());
+
 //                List<String[]> resultr = POIUtil.readExcel(file);
 //                System.out.println(resultr);
-                EasyExcel.read(file.getInputStream(), UploadData.class, new UploadDataListener()).sheet().headRowNumber(7).doRead();
+//                EasyExcel.read(file.getInputStream(), UploadData.class, uploadDataListener).sheet().headRowNumber(7).doRead();
+
+                ExcelReader excelReader = EasyExcel.read(file.getInputStream(), UploadData.class, uploadDataListener).build();
+
+                ReadSheet readSheet = EasyExcel.readSheet(0).headRowNumber(7).build();
+                excelReader.read(readSheet);
+                excelReader.finish();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
