@@ -16,7 +16,6 @@ import java.util.List;
 /**
  * 合并两个docx文档方法，对文档包含的图片无效
  * @author laitong.ma
- * @date 2018年9月17日
  */
 public class POIMergeDocUtil {
 
@@ -144,5 +143,13 @@ public class POIMergeDocUtil {
         CTBody makeBody = CTBody.Factory.parse(prefix + mainPart + addPart
                 + sufix);
         src.set(makeBody);
+    }
+
+
+    /**
+     * 人数统计
+     */
+    private static void numberStatistics() {
+
     }
 }
