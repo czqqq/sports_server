@@ -13,6 +13,7 @@ public interface GroupMapper {
     Group findByName(@Param("name") String name);
 
 
-    @Select("SELECT g.* FROM `group` g RIGHT JOIN `classes` c ON g.id = c.gid WHERE g.`status` = 0")
-    List<Group> selectAvailAbleGroup();
+    @Select("\n" +
+            "SELECT g.* FROM `group` g RIGHT JOIN `classes` c ON g.id = c.gid WHERE g.`status` = 0 GROUP BY g.id")
+    List<Group> selectAvailAble();
 }

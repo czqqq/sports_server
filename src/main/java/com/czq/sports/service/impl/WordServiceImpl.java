@@ -1,8 +1,11 @@
 package com.czq.sports.service.impl;
 
+import com.czq.sports.mapper.ClassesMapper;
 import com.czq.sports.mapper.GroupMapper;
 import com.czq.sports.mapper.StudentMapper;
+import com.czq.sports.pojo.Classes;
 import com.czq.sports.pojo.Group;
+import com.czq.sports.pojo.Student;
 import com.czq.sports.service.WordService;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.util.IOUtils;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +34,8 @@ public class WordServiceImpl implements WordService {
     private StudentMapper studentMapper;
     @Autowired
     private GroupMapper groupMapper;
+    @Autowired
+    private ClassesMapper classesMapper;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -37,7 +43,7 @@ public class WordServiceImpl implements WordService {
 
 
         //生成 7_参赛人员统计表
-        numberStatistics();
+//   todo     numberStatistics();
 
         //生成8_号码对照表
         studentNo();
@@ -62,7 +68,7 @@ public class WordServiceImpl implements WordService {
                 "d:\\words\\14_田径纪录.docx"
         };
         String destDocx = "d:\\words\\章程.docx";
-//        mergeDoc(srcDocxs, destDocx);
+//   todo     mergeDoc(srcDocxs, destDocx);
 
 
     }
@@ -263,14 +269,34 @@ public class WordServiceImpl implements WordService {
 
     private void studentNo() {
         //设置编号
-        studentMapper.updateNo();
-        List<Group> groups = groupMapper.selectAvailAbleGroup();
+//todo        studentMapper.updateNo();
 
+        //处理为分组数据
+        List<Group> groups = groupMapper.selectAvailAble();
+        List<Classes> classes = classesMapper.selectAvailable();
+        List<Student> students = studentMapper.selectAvailable();
+        Map<Integer, List<Classes>> group2Classes = new HashMap<>();
+        Map<Integer, List<Student>> classes2Student = new HashMap<>();
 
+        for (Group group : groups) {
+            Integer gid = group.getId();
+            List<Classes> classes1 = new ArrayList<>();
+            for (Classes aClass : classes) {
+                if (aClass.getGid().equals(gid)) {
+                    classes1.add(aClass);
+                }
 
-
-
-
+                Integer cid = aClass.getId();
+                List<Student> students1 = new ArrayList<>();
+                for (Student student : students) {
+                    if (student.getCid().equals(cid)) {
+                        students1.add(student);
+                    }
+                }
+                classes2Student.put(cid, students1);
+            }
+            group2Classes.put(gid,classes1);
+        }
 
         try {
             //创建表格
@@ -291,6 +317,66 @@ public class WordServiceImpl implements WordService {
             titleParagraphRun.setBold(true);
             titleParagraphRun.addBreak();
 
+
+            //填充内容： 组别 -> 班级 -> 男女 -> 人员
+            XWPFParagraph paragraph;
+            for (Group group : groups) {
+                //组名
+                paragraph = doc.createParagraph();
+                paragraph.setAlignment(ParagraphAlignment.CENTER);
+                XWPFRun groupNameRun = paragraph.createRun();
+                groupNameRun.setText("（" + group.getName() + "组）");
+                groupNameRun.setFontSize(18);
+                groupNameRun.setBold(true);
+                groupNameRun.addBreak();
+
+                //班级名
+                List<Classes> cList = group2Classes.get(group.getId());
+                for (Classes c : cList) {
+                    XWPFRun classesNameRun = paragraph.createRun();
+                    classesNameRun.setText(c.getName());
+                    classesNameRun.setFontSize(14);
+                    classesNameRun.setBold(true);
+                    classesNameRun.addBreak();
+
+                    List<Student> sList = classes2Student.get(c.getId());
+
+                    paragraph = doc.createParagraph();
+                    paragraph.setAlignment(ParagraphAlignment.LEFT);
+                    XWPFRun cgroup = paragraph.createRun();
+                    cgroup.setText("男子"+ group.getName()+"：");
+                    cgroup.addBreak();
+
+
+                    boolean createdWoman = false;
+                    XWPFRun sClass = paragraph.createRun();
+                    String text = "";
+                    int count = 1;
+                    for (Student s : sList) {
+                        if (s.getSex() == 1) {
+                            if (!createdWoman) {
+                                sClass.setText(text);
+                                text = "";
+
+                                cgroup = paragraph.createRun();
+                                cgroup.setText("女子"+ group.getName()+"：");
+                                cgroup.addBreak();
+                                createdWoman = true;
+                                count = 1;
+                            }
+                        }
+
+                        text += s.getNo() + "  " + s.getName() +  ( count == 4 ? "\n\r" : "\t\t");
+
+                     count++;
+                    }
+                    sClass.setText(text);
+
+
+                }
+
+
+            }
 
 
 

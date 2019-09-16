@@ -41,4 +41,7 @@ public interface StudentMapper {
     @Select("call p_update_no()")
     @Options(statementType = StatementType.CALLABLE)
     void updateNo();
+
+    @Select("SELECT * FROM student ORDER BY cid,`no`,sex")
+    List<Student> selectAvailable();
 }
