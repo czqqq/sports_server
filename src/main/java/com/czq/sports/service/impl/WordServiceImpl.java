@@ -355,7 +355,6 @@ public class WordServiceImpl implements WordService {
                     manGroup.addBreak();
 
                     boolean createdWoman = false;
-//                    XWPFRun sClass = paragraph.createRun();
                     String text = "",womanText = "";
                     int count = 1,womanCount = 1;
                     for (Student s : sList) {

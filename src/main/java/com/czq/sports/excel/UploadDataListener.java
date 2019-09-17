@@ -6,9 +6,11 @@ import com.alibaba.fastjson.JSON;
 import com.czq.sports.pojo.Classes;
 import com.czq.sports.pojo.Group;
 import com.czq.sports.pojo.Student;
+import com.czq.sports.pojo.StudentProject;
 import com.czq.sports.service.ClassesService;
 import com.czq.sports.service.GroupService;
 import com.czq.sports.service.StudentService;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
 
     private static final int BATCH_COUNT = 100;
     private List<Student> list = new ArrayList<Student>();
+    private List<StudentProject> signUpList = new ArrayList<StudentProject>();
 
     @Override
     public void invoke(UploadData data, AnalysisContext context) {
@@ -91,6 +94,14 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
                     s.setCid(this.classes.getId());
                     s.setGid(this.classes.getGid());
                     s.setCt(new Date());
+
+
+                    StudentProject sp = new StudentProject();
+                    sp.setCid(this.classes.getId());
+                    sp.setSid(null);
+                    sp.setSname(athletes);
+                    sp.setPid(//todo);
+                    sp.setCt(new Date());
                     list.add(s);
                 }
             });
