@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -343,39 +344,59 @@ public class WordServiceImpl implements WordService {
 
                     paragraph = doc.createParagraph();
                     paragraph.setAlignment(ParagraphAlignment.LEFT);
-                    XWPFRun cgroup = paragraph.createRun();
-                    cgroup.setText("男子"+ group.getName()+"：");
-                    cgroup.addBreak();
 
+                    XWPFRun manGroup = paragraph.createRun();
+                    XWPFRun manStudent = paragraph.createRun();
+                    XWPFRun womanGroup = paragraph.createRun();
+                    XWPFRun womanStudent = paragraph.createRun();
+
+                    manGroup.setText("男子"+ group.getName()+"：");
+                    manGroup.addBreak();
 
                     boolean createdWoman = false;
-                    XWPFRun sClass = paragraph.createRun();
-                    String text = "";
-                    int count = 1;
+//                    XWPFRun sClass = paragraph.createRun();
+                    String text = "",womanText = "";
+                    int count = 1,womanCount = 1;
                     for (Student s : sList) {
                         if (s.getSex() == 1) {
                             if (!createdWoman) {
-                                sClass.setText(text);
-                                text = "";
-
-                                cgroup = paragraph.createRun();
-                                cgroup.setText("女子"+ group.getName()+"：");
-                                cgroup.addBreak();
+                                womanGroup.setText("女子"+ group.getName()+"：");
+                                womanGroup.addBreak();
                                 createdWoman = true;
-                                count = 1;
                             }
+
+                            if (womanCount == 5) {
+                                womanStudent.setText(womanText);
+                                womanStudent.addBreak();
+                                womanText = s.getNo() + "  " + s.getName() + "\t\t";
+                                womanCount = 1;
+                            } else {
+                                womanText += s.getNo() + "  " + s.getName() + "\t\t";
+                            }
+                            womanCount++;
+                        }else{
+
+                            if (count == 5) {
+                                manStudent.setText(text);
+                                manStudent.addBreak();
+                                text = s.getNo() + "  " + s.getName() + "\t\t";
+                                count = 1;
+                            }else{
+                                text += s.getNo() + "  " + s.getName() + "\t\t";
+                            }
+                            count++;
                         }
-
-                        text += s.getNo() + "  " + s.getName() +  ( count == 4 ? "\n\r" : "\t\t");
-
-                     count++;
                     }
-                    sClass.setText(text);
-
+                    if (StringUtils.hasText(text)) {
+                        manStudent.setText(text);
+                        manStudent.addBreak();
+                    }
+                    if (StringUtils.hasText(womanText)) {
+                        womanStudent.setText(womanText);
+                        womanStudent.addBreak();
+                    }
 
                 }
-
-
             }
 
 
