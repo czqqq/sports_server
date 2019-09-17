@@ -44,11 +44,12 @@ public class WordServiceImpl implements WordService {
 
 
         //生成 7_参赛人员统计表
-//   todo     numberStatistics();
+//todo        numberStatistics();
 
         //生成8_号码对照表
-        studentNo();
-
+//todo        studentNo();
+        //生成9_竞赛日程
+        raceDate();
 
 
         String[] srcDocxs = {
@@ -270,7 +271,7 @@ public class WordServiceImpl implements WordService {
 
     private void studentNo() {
         //设置编号
-//todo        studentMapper.updateNo();
+        studentMapper.updateNo();
 
         //处理为分组数据
         List<Group> groups = groupMapper.selectAvailAble();
@@ -399,20 +400,16 @@ public class WordServiceImpl implements WordService {
                 }
             }
 
-
-
-
-
-
-
-
-
             doc.write(out);
             out.close();
             System.out.println("生成8_号码对照表.docx 成功");
         } catch (IOException e) {
             logger.error("创建号码对照表失败",e);
         }
+    }
+
+    private void raceDate() {
+
     }
 
 
