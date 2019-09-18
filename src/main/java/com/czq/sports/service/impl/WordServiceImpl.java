@@ -51,6 +51,8 @@ public class WordServiceImpl implements WordService {
         //生成9_竞赛日程
         raceDate();
 
+        //生成10_分组分道表
+        groupLine();
 
         String[] srcDocxs = {
                 "d:\\words\\0_目录.docx",
@@ -411,5 +413,74 @@ public class WordServiceImpl implements WordService {
 
     }
 
+    private void groupLine() {
+        try {
+            //创建表格
+            //Blank Document
+            XWPFDocument doc= new XWPFDocument();
 
+            //Write the Document in file system
+            FileOutputStream out = new FileOutputStream(new File("d:\\words\\10_分组分道表.docx"));
+            //添加标题
+            XWPFParagraph titleParagraph = doc.createParagraph();
+            //设置段落居中
+            titleParagraph.setAlignment(ParagraphAlignment.CENTER);
+
+            XWPFRun titleParagraphRun = titleParagraph.createRun();
+            titleParagraphRun.setText("运动员分组分道表");
+            titleParagraphRun.setColor("000000");
+            titleParagraphRun.setFontSize(20);
+            titleParagraphRun.setBold(true);
+            titleParagraphRun.addBreak();
+
+            String[] units = {"第一单元","第二单元","第三单元","第四单元"};
+            String[] types = {"<径赛>","<田赛>"};
+            XWPFParagraph paragraph;
+            XWPFParagraph paragraph2;
+            for (String unit : units) {
+                paragraph = doc.createParagraph();
+                paragraph.setAlignment(ParagraphAlignment.CENTER);
+                XWPFRun unitRun = paragraph.createRun();
+                unitRun.setText(unit);
+                unitRun.setFontSize(18);
+                unitRun.setBold(true);
+                unitRun.addBreak();
+
+                for (String type : types) {
+                    XWPFRun typeRun = paragraph.createRun();
+                    typeRun.setText(type);
+                    typeRun.setFontSize(14);
+                    typeRun.setBold(true);
+                    typeRun.addBreak();
+
+                    //print head 打印头
+                    paragraph2 = doc.createParagraph();
+                    paragraph2.setAlignment(ParagraphAlignment.LEFT);
+                    XWPFRun headRun = paragraph2.createRun();
+                    headRun.setText("组│\t一道\t\t二道\t\t三道\t\t四道\t\t五道\t\t六道\t\t七道\t\t八道");
+                    headRun.addBreak();
+                    headRun = paragraph2.createRun();
+                    headRun.setText("─╂──────────────────────────────────────");
+                    headRun.addBreak();
+                    for (int i = 0; i <5; i++) {
+                        XWPFRun hr = paragraph2.createRun();
+                        hr.setText(i + " │ ");
+                        hr.addBreak();
+                    }
+
+                }
+
+            }
+
+
+
+
+
+            doc.write(out);
+            out.close();
+            System.out.println("生成10_分组分道表.docx 成功");
+        } catch (IOException e) {
+            logger.error("生成10_分组分道表.docx 失败",e);
+        }
+    }
 }

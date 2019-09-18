@@ -3,14 +3,8 @@ package com.czq.sports.excel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
-import com.czq.sports.pojo.Classes;
-import com.czq.sports.pojo.Group;
-import com.czq.sports.pojo.Student;
-import com.czq.sports.pojo.StudentProject;
-import com.czq.sports.service.ClassesService;
-import com.czq.sports.service.GroupService;
-import com.czq.sports.service.StudentService;
-import lombok.Data;
+import com.czq.sports.pojo.*;
+import com.czq.sports.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +28,10 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
     private ClassesService classesService;
     @Autowired
     private StudentService studentService;
-
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    private StudentProjectService studentProjectService;
     private Classes classes;
     private Map<String,Integer> signCount;
 
@@ -55,10 +52,18 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
             return;
         }
 
+
         byte sex = data.getGroupName().indexOf("男子") > 0 ? (byte)0 : (byte)1;
 
         String athletes1 = data.getAthletes1();
         String athletes2 = data.getAthletes2();
+
+        String projectName =  ((sex == 0) ? "男子" : "女子") + data.getProjectName();
+        Project project = projectService.selectByName(projectName);
+        Integer pid = null;
+        if (project != null) {
+            pid = project.getId();
+        }
 
         if (",18,19,30,31,".contains(","+row + ",")) {
             //团体项目 todo
@@ -77,6 +82,7 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
                 strings.add(athletes2);
             }
 
+            Integer finalPid = pid;
             strings.forEach(athletes -> {
                 if (StringUtils.hasText(athletes)) {
                     Integer count = signCount.get(athletes);
@@ -94,15 +100,15 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
                     s.setCid(this.classes.getId());
                     s.setGid(this.classes.getGid());
                     s.setCt(new Date());
-
+                    list.add(s);
 
                     StudentProject sp = new StudentProject();
                     sp.setCid(this.classes.getId());
                     sp.setSid(null);
                     sp.setSname(athletes);
-                    sp.setPid(//todo);
+                    sp.setPid(finalPid);
                     sp.setCt(new Date());
-                    list.add(s);
+                    signUpList.add(sp);
                 }
             });
         }
@@ -203,6 +209,7 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
         saveData();
         signCount = null;
         list.clear();
+        signUpList.clear();
         LOGGER.info("所有数据解析完成！");
     }
 
@@ -213,6 +220,10 @@ public class UploadDataListener extends AnalysisEventListener<UploadData> {
         LOGGER.info("{}条数据，开始存储数据库！", list.size());
         studentService.deleteByCid(this.classes.getId());
         studentService.insertBatch(list);
+
+        studentProjectService.deleteByCid(this.classes.getId());
+        studentProjectService.insertBatch(signUpList);
+
         this.classes = null;
         LOGGER.info("存储数据库成功！");
     }
