@@ -1,12 +1,10 @@
 package com.czq.sports.mapper;
 
 import com.czq.sports.pojo.StudentProject;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface StudentProjectMapper {
@@ -22,4 +20,13 @@ public interface StudentProjectMapper {
 
     @Delete("delete from student_project where cid = #{cid}")
     int deleteByCid(@Param(value = "cid") Integer cid);
+
+    @Select({"SELECT count(1) `count`, GROUP_CONCAT(s.name) `athletes`,p.name `project`,s.sex, g.name `group` \n" +
+            "FROM `student_project` sp \n" +
+            "LEFT JOIN `student` s ON (sp.sname = s.`name` AND sp.cid = s.cid) \n" +
+            "LEFT JOIN `project` p ON sp.pid = p.id \n" +
+            "LEFT JOIN `classes` c ON sp.cid = c.id \n" +
+            "LEFT JOIN `group` g ON c.gid = g.id \n" +
+            "GROUP BY sp.pid, s.sex"})
+    List<Map<String,Object>> selectStatistics();
 }

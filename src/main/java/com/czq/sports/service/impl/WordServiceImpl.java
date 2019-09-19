@@ -1,8 +1,10 @@
 package com.czq.sports.service.impl;
 
+import com.czq.sports.excel.DocReplace;
 import com.czq.sports.mapper.ClassesMapper;
 import com.czq.sports.mapper.GroupMapper;
 import com.czq.sports.mapper.StudentMapper;
+import com.czq.sports.mapper.StudentProjectMapper;
 import com.czq.sports.pojo.Classes;
 import com.czq.sports.pojo.Group;
 import com.czq.sports.pojo.Student;
@@ -23,10 +25,8 @@ import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class WordServiceImpl implements WordService {
@@ -37,6 +37,8 @@ public class WordServiceImpl implements WordService {
     private GroupMapper groupMapper;
     @Autowired
     private ClassesMapper classesMapper;
+    @Autowired
+    private StudentProjectMapper studentProjectMapper;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -410,7 +412,284 @@ public class WordServiceImpl implements WordService {
     }
 
     private void raceDate() {
+        //从数据库查找统计数据
+        List<Map<String,Object>> results = studentProjectMapper.selectStatistics();
 
+        int count = 0;
+        int sex = 0;
+        String athletes = "";
+        String project = "";
+        String group = "";
+        int p0n=0,p1n=0,p2n=0,p3n=0,p4n=0,p5n=0,p6n=0,p7n=0,p8n=0,p9n=0,p10n=0,
+                _2p1n=0,_2p2n=0,_2p3n=0,_2p4n=0,_2p5n=0,_2p6n=0,_2p7n=0,_2p8n=0,_2p9n=0,_2p10n=0,_2p11n=0,_2p12n=0,_2p13n=0,
+                _3p1n=0,_3p2n=0,_3p3n=0,_3p4n=0,_3p5n=0,_3p6n=0,_3p7n=0,_3p8n=0,_3p9n=0,_3p10n=0,
+                _4p1n=0,_4p2n=0,_4p3n=0,_4p4n=0,_4p5n=0,_4p6n=0,_4p7n=0,_4p8n=0,
+                _5p1n=0,_5p2n=0,_5p3n=0,_5p4n=0,_5p5n=0;
+
+        for (Map<String, Object> result : results) {
+            count = Integer.parseInt(result.get("count").toString());
+            sex =  Integer.parseInt(result.get("sex").toString());
+            athletes = result.get("athletes").toString();
+            project = result.get("project").toString();
+            group = result.get("group").toString();
+
+            if(group.equals("中职")){
+                if (project.equals("男子100米")) {
+                    p0n = count;
+                } else if (project.equals("女子200米")) {
+                    p2n = count;
+                } else if (project.equals("男子800米")) {
+                    p4n = count;
+                } else if (project.equals("女子800米")) {
+                    p6n = count;
+                } else if (project.equals("女子跳远")) {
+                    p9n = count;
+                } else if (project.equals("男子跳高")) {
+                    p10n = count;
+                }
+                /////////////////////////
+                else if (project.equals("女子100米栏")) {
+                    _2p1n = count;
+                } else if (project.equals("男子110米栏")) {
+                    _2p3n = count;
+                } else if (project.equals("男子400米")) {
+                    _2p5n = count;
+                } else if (project.equals("女子1500米")) {
+                    _2p8n = count;
+                } else if (project.equals("男子1500米")) {
+                    _2p9n = count;
+                } else if (project.equals("男子铅球")) {
+                    _2p12n = count;
+                }
+                /////////////////////////////
+                else if (project.equals("女子100米")) {
+                    _3p1n = count;
+                } else if (project.equals("男子200米")) {
+                    _3p3n = count;
+                } else if (project.equals("女子400米")) {
+                    _3p7n = count;
+                } else if (project.equals("男子三级跳远")) {
+                    _3p9n = count;
+                }
+                ///////////////////////////////////
+
+                else if (project.equals("女子4×100接力")) {
+                    _4p1n = count;
+                } else if (project.equals("男子4×400接力")) {
+                    _4p3n = count;
+                } else if (project.equals("男子跳远")) {
+                    _4p5n = count;
+                } else if (project.equals("女子铅球")) {
+                    _4p7n = count;
+                }
+
+                //////////////////////////////////////
+                else if (project.equals("男子4×100接力")) {
+                    _5p1n = count;
+                } else if (project.equals("男子5000米")) {
+                    _5p3n = count;
+                } else if (project.equals("女子跳高")) {
+                    _5p5n = count;
+                }
+
+
+
+            }else if(group.equals("高职")){
+                if (project.equals("男子100米")) {
+                    p1n = count;
+                } else if (project.equals("女子200米")) {
+                    p3n = count;
+                } else if (project.equals("男子800米")) {
+                    p5n = count;
+                } else if (project.equals("女子800米")) {
+                    p7n = count;
+                } else if (project.equals("男子铅球")) {
+                    p8n = count;
+                }
+                //////////////////////////////////////
+                else if (project.equals("女子100米栏")) {
+                    _2p2n = count;
+                } else if (project.equals("男子110米栏")) {
+                    _2p4n = count;
+                } else if (project.equals("男子400米")) {
+                    _2p6n = count;
+                } else if (project.equals("女子1500米")) {
+                    _2p7n = count;
+                } else if (project.equals("男子1500米")) {
+                    _2p10n = count;
+                } else if (project.equals("女子跳远")) {
+                    _2p11n = count;
+                } else if (project.equals("男子跳高")) {
+                    _2p13n = count;
+                }
+                ////////////////////////////////////////////
+                else if (project.equals("女子100米")) {
+                    _3p2n = count;
+                } else if (project.equals("男子200米")) {
+                    _3p4n = count;
+                } else if (project.equals("女子3000米")) {
+                    _3p5n = count;
+                } else if (project.equals("男子5000米")) {
+                    _3p6n = count;
+                } else if (project.equals("女子400米")) {
+                    _3p8n = count;
+                } else if (project.equals("女子铅球")) {
+                    _3p10n = count;
+                }
+
+                //////////////////////
+                else if (project.equals("女子4×100接力")) {
+                    _4p2n = count;
+                } else if (project.equals("男子4×400接力")) {
+                    _4p4n = count;
+                } else if (project.equals("男子跳远")) {
+                    _4p6n = count;
+                } else if (project.equals("女子跳高")) {
+                    _4p8n = count;
+                }
+
+                ///////////////////////////////
+                else if (project.equals("男子4×100接力")) {
+                    _5p2n = count;
+                } else if (project.equals("男子三级跳远")) {
+                    _5p4n = count;
+                }
+            }else{
+                //todo 团体
+            }
+
+        }
+
+
+        int[] numbers = {p0n,p1n,p2n,p3n,p4n,p5n,p6n,p7n,p8n,p9n,p10n,
+                _2p1n,_2p2n,_2p3n,_2p4n,_2p5n,_2p6n,_2p7n,_2p8n,_2p9n,_2p10n,_2p11n,_2p12n,_2p13n,
+                _3p1n,_3p2n,_3p3n,_3p4n,_3p5n,_3p6n,_3p7n,_3p8n,_3p9n,_3p10n,
+                _4p1n,_4p2n,_4p3n,_4p4n,_4p5n,_4p6n,_4p7n,_4p8n,
+                _5p1n,_5p2n,_5p3n,_5p4n,_5p5n};
+
+
+
+
+        //替换日期、星期几
+        SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
+        SimpleDateFormat weekSdf = new SimpleDateFormat("EEEE");
+
+        Calendar calendar = Calendar.getInstance();
+        Date day1 = new Date();
+        calendar.setTime(day1);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        Date day2 = calendar.getTime();
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        Date day3 = calendar.getTime();
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("day_one_1", sdf.format(day1));
+        map.put("day_one_2", sdf.format(day1));
+        map.put("day_two_1", sdf.format(day2));
+        map.put("day_two_2", sdf.format(day2));
+        map.put("day_3", sdf.format(day3));
+        map.put("day_one_1_week", weekSdf.format(day1));
+        map.put("day_one_2_week", weekSdf.format(day1));
+        map.put("day_two_1_week", weekSdf.format(day2));
+        map.put("day_two_2_week", weekSdf.format(day2));
+        map.put("day_3_week", weekSdf.format(day3));
+
+
+
+        //替换项目人数、分组数
+
+
+
+        map.put("p0n", String.valueOf(numbers[0]));
+        map.put("p0g", String.valueOf(new Double(Math.ceil(numbers[0]/8.0)).intValue()));
+        map.put("p1n", String.valueOf(numbers[1]));
+        map.put("p1g", String.valueOf(new Double(Math.ceil(numbers[1]/8.0)).intValue()));
+        map.put("p2n", String.valueOf(numbers[2]));
+        map.put("p2g", String.valueOf(new Double(Math.ceil(numbers[2]/8.0)).intValue()));
+        map.put("p3n", String.valueOf(numbers[3]));
+        map.put("p3g", String.valueOf(new Double(Math.ceil(numbers[3]/8.0)).intValue()));
+        map.put("p4n", String.valueOf(numbers[4]));
+        map.put("p4g", String.valueOf(new Double(Math.ceil(numbers[4]/8.0)).intValue()));
+        map.put("p5n", String.valueOf(numbers[5]));
+        map.put("p5g", String.valueOf(new Double(Math.ceil(numbers[5]/8.0)).intValue()));
+        map.put("p6n", String.valueOf(numbers[6]));
+        map.put("p6g", String.valueOf(new Double(Math.ceil(numbers[6]/8.0)).intValue()));
+        map.put("p7n", String.valueOf(numbers[7]));
+        map.put("p7g", String.valueOf(new Double(Math.ceil(numbers[7]/8.0)).intValue()));
+        map.put("p8n", String.valueOf(numbers[8]));
+        map.put("p9n", String.valueOf(numbers[9]));
+        map.put("p10n", String.valueOf(numbers[10]));
+
+
+        map.put("2p1n", String.valueOf(numbers[11]));
+        map.put("2p1g", String.valueOf(new Double(Math.ceil(numbers[11]/8.0)).intValue()));
+        map.put("2p2n", String.valueOf(numbers[12]));
+        map.put("2p2g", String.valueOf(new Double(Math.ceil(numbers[12]/8.0)).intValue()));
+        map.put("2p3n", String.valueOf(numbers[13]));
+        map.put("2p3g", String.valueOf(new Double(Math.ceil(numbers[13]/8.0)).intValue()));
+        map.put("2p4n", String.valueOf(numbers[14]));
+        map.put("2p4g", String.valueOf(new Double(Math.ceil(numbers[14]/8.0)).intValue()));
+        map.put("2p5n", String.valueOf(numbers[15]));
+        map.put("2p5g", String.valueOf(new Double(Math.ceil(numbers[15]/8.0)).intValue()));
+        map.put("2p6n", String.valueOf(numbers[16]));
+        map.put("2p6g", String.valueOf(new Double(Math.ceil(numbers[16]/8.0)).intValue()));
+        map.put("2p7n", String.valueOf(numbers[17]));
+        map.put("2p7g", String.valueOf(new Double(Math.ceil(numbers[17]/25.0)).intValue()));
+        map.put("2p8n", String.valueOf(numbers[18]));
+        map.put("2p8g", String.valueOf(new Double(Math.ceil(numbers[18]/25.0)).intValue()));
+        map.put("2p9n", String.valueOf(numbers[19]));
+        map.put("2p9g", String.valueOf(new Double(Math.ceil(numbers[19]/25.0)).intValue()));
+        map.put("2p10n", String.valueOf(numbers[20]));
+        map.put("2p10g", String.valueOf(new Double(Math.ceil(numbers[20]/25.0)).intValue()));
+        map.put("2p11n", String.valueOf(numbers[21]));
+        map.put("2p12n", String.valueOf(numbers[22]));
+        map.put("2p13n", String.valueOf(numbers[23]));
+
+
+        map.put("3p1n", String.valueOf(numbers[24]));
+        map.put("3p1g", String.valueOf(new Double(Math.ceil(numbers[24]/8.0)).intValue()));
+        map.put("3p2n", String.valueOf(numbers[25]));
+        map.put("3p2g", String.valueOf(new Double(Math.ceil(numbers[25]/8.0)).intValue()));
+        map.put("3p3n", String.valueOf(numbers[26]));
+        map.put("3p3g", String.valueOf(new Double(Math.ceil(numbers[26]/8.0)).intValue()));
+        map.put("3p4n", String.valueOf(numbers[27]));
+        map.put("3p4g", String.valueOf(new Double(Math.ceil(numbers[27]/8.0)).intValue()));
+        map.put("3p5n", String.valueOf(numbers[28]));
+        map.put("3p6n", String.valueOf(numbers[29]));
+        map.put("3p7n", String.valueOf(numbers[30]));
+        map.put("3p7g", String.valueOf(new Double(Math.ceil(numbers[30]/8.0)).intValue()));
+        map.put("3p8n", String.valueOf(numbers[31]));
+        map.put("3p8g", String.valueOf(new Double(Math.ceil(numbers[31]/8.0)).intValue()));
+        map.put("3p9n", String.valueOf(numbers[32]));
+        map.put("3p10n", String.valueOf(numbers[33]));
+
+        map.put("4p1n", String.valueOf(numbers[34]));
+        map.put("4p1g", String.valueOf(new Double(Math.ceil(numbers[34]/8.0)).intValue()));
+        map.put("4p2n", String.valueOf(numbers[35]));
+        map.put("4p2g", String.valueOf(new Double(Math.ceil(numbers[35]/8.0)).intValue()));
+        map.put("4p3n", String.valueOf(numbers[36]));
+        map.put("4p3g", String.valueOf(new Double(Math.ceil(numbers[36]/8.0)).intValue()));
+        map.put("4p4n", String.valueOf(numbers[37]));
+        map.put("4p4g", String.valueOf(new Double(Math.ceil(numbers[37]/8.0)).intValue()));
+        map.put("4p5n", String.valueOf(numbers[38]));
+        map.put("4p6n", String.valueOf(numbers[39]));
+        map.put("4p7n", String.valueOf(numbers[40]));
+        map.put("4p8n", String.valueOf(numbers[41]));
+
+
+        map.put("5p1n", String.valueOf(numbers[42]));
+        map.put("5p1g", String.valueOf(new Double(Math.ceil(numbers[42]/8.0)).intValue()));
+        map.put("5p2n", String.valueOf(numbers[43]));
+        map.put("5p2g", String.valueOf(new Double(Math.ceil(numbers[43]/8.0)).intValue()));
+        map.put("5p3n", String.valueOf(numbers[44]));
+        map.put("5p4n", String.valueOf(numbers[45]));
+        map.put("5p5n", String.valueOf(numbers[46]));
+
+        String srcPath = "D:\\words\\9_竞赛日程_模板.docx";
+        String destPath = "D:\\words\\9_竞赛日程.docx";
+        DocReplace.searchAndReplace(srcPath, destPath, map);
+
+        logger.info("生成9_竞赛日程.docx 成功");
     }
 
     private void groupLine() {
