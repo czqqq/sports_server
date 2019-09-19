@@ -69,6 +69,44 @@ public class DocReplace {
 
     }
 
+    public static void searchAndReplace2(String srcPath, String destPath, Map<String, String> map) {
+        try {
+            XWPFDocument document = new XWPFDocument(POIXMLDocument.openPackage(srcPath));
+            /**
+             * 替换段落中的指定文字
+             */
+            Iterator<XWPFParagraph> itPara = document.getParagraphsIterator();
+            while (itPara.hasNext()) {
+                XWPFParagraph paragraph = (XWPFParagraph) itPara.next();
+                Set<String> set = map.keySet();
+                Iterator<String> iterator = set.iterator();
+                while (iterator.hasNext()) {
+                    String key = iterator.next();
+                    List<XWPFRun> run = paragraph.getRuns();
+                    for (int i = 0; i < run.size(); i++) {
+                        if (run.get(i).getText(run.get(i).getTextPosition()) != null &&
+                                run.get(i).getText(run.get(i).getTextPosition()).equals(key)) {
+                            /**
+                             * 参数0表示生成的文字是要从哪一个地方开始放置,设置文字从位置0开始
+                             * 就可以把原来的文字全部替换掉了
+                             */
+                            run.get(i).setText(map.get(key), 0);
+                        }
+                    }
+                }
+            }
+
+            FileOutputStream outStream = null;
+            outStream = new FileOutputStream(destPath);
+            document.write(outStream);
+            outStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     public static void main(String[] args) throws Exception {
 
 

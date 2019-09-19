@@ -21,7 +21,7 @@ public interface StudentProjectMapper {
     @Delete("delete from student_project where cid = #{cid}")
     int deleteByCid(@Param(value = "cid") Integer cid);
 
-    @Select({"SELECT count(1) `count`, GROUP_CONCAT(s.name) `athletes`,p.name `project`,s.sex, g.name `group` \n" +
+    @Select({"SELECT count(1) `count`, GROUP_CONCAT(s.name) `athletes`,GROUP_CONCAT(s.no) `nos`,GROUP_CONCAT(c.name) `classes`,p.name `project`,s.sex, g.name `group` \n" +
             "FROM `student_project` sp \n" +
             "LEFT JOIN `student` s ON (sp.sname = s.`name` AND sp.cid = s.cid) \n" +
             "LEFT JOIN `project` p ON sp.pid = p.id \n" +

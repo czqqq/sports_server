@@ -51,7 +51,7 @@ public class WordServiceImpl implements WordService {
         //生成8_号码对照表
 //todo        studentNo();
         //生成9_竞赛日程
-        raceDate();
+        raceDate(null,null);
 
         //生成10_分组分道表
         groupLine();
@@ -411,13 +411,15 @@ public class WordServiceImpl implements WordService {
         }
     }
 
-    private void raceDate() {
+    private void raceDate(String srcPath, String destPath) {
         //从数据库查找统计数据
         List<Map<String,Object>> results = studentProjectMapper.selectStatistics();
 
         int count = 0;
         int sex = 0;
         String athletes = "";
+        String nos = "";
+        String classes = "";
         String project = "";
         String group = "";
         int p0n=0,p1n=0,p2n=0,p3n=0,p4n=0,p5n=0,p6n=0,p7n=0,p8n=0,p9n=0,p10n=0,
@@ -685,14 +687,20 @@ public class WordServiceImpl implements WordService {
         map.put("5p4n", String.valueOf(numbers[45]));
         map.put("5p5n", String.valueOf(numbers[46]));
 
-        String srcPath = "D:\\words\\9_竞赛日程_模板.docx";
-        String destPath = "D:\\words\\9_竞赛日程.docx";
-        DocReplace.searchAndReplace(srcPath, destPath, map);
+        if (srcPath == null && destPath == null) {
+            srcPath = "D:\\words\\9_竞赛日程_模板.docx";
+            destPath = "D:\\words\\9_竞赛日程.docx";
+            DocReplace.searchAndReplace(srcPath, destPath, map);
 
-        logger.info("生成9_竞赛日程.docx 成功");
+            logger.info("生成9_竞赛日程.docx 成功");
+        } else{
+            DocReplace.searchAndReplace(srcPath, destPath, map);
+            logger.info("生成10_分组分道表.docx 成功");
+        }
+
     }
 
-    private void groupLine() {
+    private void groupLine() {/*
         try {
             //创建表格
             //Blank Document
@@ -760,6 +768,8 @@ public class WordServiceImpl implements WordService {
             System.out.println("生成10_分组分道表.docx 成功");
         } catch (IOException e) {
             logger.error("生成10_分组分道表.docx 失败",e);
-        }
+        }*/
+
+        raceDate("D:\\words\\10_分组分道表_模板.docx","D:\\words\\10_分组分道表.docx");
     }
 }
