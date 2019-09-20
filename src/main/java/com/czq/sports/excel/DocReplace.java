@@ -3,8 +3,10 @@ package com.czq.sports.excel;
 
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.xwpf.usermodel.*;
+import org.springframework.util.StringUtils;
 
 import javax.xml.crypto.Data;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -59,8 +61,7 @@ public class DocReplace {
                     }
                 }
             }
-            FileOutputStream outStream = null;
-            outStream = new FileOutputStream(destPath);
+            FileOutputStream outStream = new FileOutputStream(destPath);
             document.write(outStream);
             outStream.close();
         } catch (Exception e) {
@@ -86,11 +87,65 @@ public class DocReplace {
                     for (int i = 0; i < run.size(); i++) {
                         if (run.get(i).getText(run.get(i).getTextPosition()) != null &&
                                 run.get(i).getText(run.get(i).getTextPosition()).equals(key)) {
-                            /**
-                             * 参数0表示生成的文字是要从哪一个地方开始放置,设置文字从位置0开始
-                             * 就可以把原来的文字全部替换掉了
-                             */
-                            run.get(i).setText(map.get(key), 0);
+
+                            if (key.contains("Anames")) {
+                                String info = map.get(key);
+                                String[] detail = info.split(";");
+                                String athletes = detail[0];
+                                String nos = detail[1];
+                                String classes = detail[2];
+
+                                if (StringUtils.hasText(athletes)) {
+                                    String[] a = athletes.split(",");
+                                    String[] n = nos.split(",");
+                                    String[] c = classes.split(",");
+
+
+                                    XWPFRun run1 = run.get(i);
+                                    //分3行打印,每8个一行
+
+
+                                    StringBuilder as = null;
+
+
+                                    int group = new Double(Math.ceil(a.length / 8.0)).intValue();
+
+                                    int j=0,k=0,l=0;
+                                    for (int i1 = 0; i1 < group; i1++) {
+                                        as = new StringBuilder(" " + (i1 + 1) + "│\t");
+                                        for (j = i1 * 8; j < (i1 + 1) * 8; j++) {
+                                            as.append(n[j]).append("\t");
+                                        }
+                                        run1.setText(as.toString(), 0);
+                                        run1.addBreak();
+
+                                        as = new StringBuilder("  │\t");
+                                        for (k = i1 * 8; k < (i1 + 1) * 8; k++) {
+                                            as.append(a[k]).append("\t");
+                                        }
+                                        run1.setText(as.toString());
+                                        run1.addBreak();
+
+                                        as = new StringBuilder("  │\t");
+                                        for (l = i1 * 8; l < (i1 + 1) * 8; l++) {
+                                            as.append(c[l]).append("\t");
+                                        }
+                                        run1.setText(as.toString());
+                                        run1.addBreak();
+                                        run1.setText("  │\t");
+                                        run1.addBreak();
+                                    }
+
+                                }
+
+
+                            } else {
+                                /**
+                                 * 参数0表示生成的文字是要从哪一个地方开始放置,设置文字从位置0开始
+                                 * 就可以把原来的文字全部替换掉了
+                                 */
+                                run.get(i).setText(map.get(key), 0);
+                            }
                         }
                     }
                 }

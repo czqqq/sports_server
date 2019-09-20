@@ -8,6 +8,7 @@ import com.czq.sports.mapper.StudentProjectMapper;
 import com.czq.sports.pojo.Classes;
 import com.czq.sports.pojo.Group;
 import com.czq.sports.pojo.Student;
+import com.czq.sports.pojo.WordAthleteBean;
 import com.czq.sports.service.WordService;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.util.IOUtils;
@@ -46,12 +47,12 @@ public class WordServiceImpl implements WordService {
 
 
         //生成 7_参赛人员统计表
-//todo        numberStatistics();
+//        numberStatistics();
 
         //生成8_号码对照表
-//todo        studentNo();
+//        studentNo();
         //生成9_竞赛日程
-        raceDate(null,null);
+//        raceDate(null,null);
 
         //生成10_分组分道表
         groupLine();
@@ -74,7 +75,7 @@ public class WordServiceImpl implements WordService {
                 "d:\\words\\14_田径纪录.docx"
         };
         String destDocx = "d:\\words\\章程.docx";
-//   todo     mergeDoc(srcDocxs, destDocx);
+//        mergeDoc(srcDocxs, destDocx);
 
 
     }
@@ -414,7 +415,7 @@ public class WordServiceImpl implements WordService {
     private void raceDate(String srcPath, String destPath) {
         //从数据库查找统计数据
         List<Map<String,Object>> results = studentProjectMapper.selectStatistics();
-
+        Map<String, String> map = new HashMap<String, String>();
         int count = 0;
         int sex = 0;
         String athletes = "";
@@ -432,66 +433,123 @@ public class WordServiceImpl implements WordService {
             count = Integer.parseInt(result.get("count").toString());
             sex =  Integer.parseInt(result.get("sex").toString());
             athletes = result.get("athletes").toString();
+            nos = result.get("nos").toString();
+            classes = result.get("classes").toString();
             project = result.get("project").toString();
             group = result.get("group").toString();
+
+
+            //把顺序打乱，重新传入map
+            String[] names = athletes.split(",");
+            String[] nol = nos.split(",");
+            String[] classesl = classes.split(",");
+            List<WordAthleteBean> list = new ArrayList<>(names.length);
+            for (int i = 0; i < names.length; i++) {
+                WordAthleteBean w = new WordAthleteBean();
+                w.setNo(nol[i]);
+                w.setName(names[i]);
+                w.setClasses(classesl[i]);
+                list.add(w);
+            }
+            Collections.shuffle(list);
+
+
+            StringBuilder nAthletes = new StringBuilder();
+            StringBuilder nNos  = new StringBuilder();
+            StringBuilder nClasses = new StringBuilder();
+
+            for (int i = 0; i < list.size(); i++) {
+                nAthletes.append(list.get(i).getName())
+                        .append((i==list.size()-1)? "":",");
+                nNos.append(list.get(i).getNo())
+                        .append((i==list.size()-1)? "":",");
+                nClasses.append(list.get(i).getClasses())
+                        .append((i==list.size()-1)? "":",");
+            }
+
+            //传入
+            String info = nAthletes.toString()+";"+nNos.toString()+";"+nClasses.toString();
 
             if(group.equals("中职")){
                 if (project.equals("男子100米")) {
                     p0n = count;
+                    map.put("Anames0", info);
                 } else if (project.equals("女子200米")) {
                     p2n = count;
+                    map.put("Anames2", info);
                 } else if (project.equals("男子800米")) {
                     p4n = count;
+                    map.put("Anames4", info);
                 } else if (project.equals("女子800米")) {
                     p6n = count;
+                    map.put("Anames6", info);
                 } else if (project.equals("女子跳远")) {
                     p9n = count;
+                    map.put("Anames9", info);
                 } else if (project.equals("男子跳高")) {
                     p10n = count;
+                    map.put("Anames10", info);
                 }
                 /////////////////////////
                 else if (project.equals("女子100米栏")) {
                     _2p1n = count;
+                    map.put("2Anames1", info);
                 } else if (project.equals("男子110米栏")) {
                     _2p3n = count;
+                    map.put("2Anames3", info);
                 } else if (project.equals("男子400米")) {
                     _2p5n = count;
+                    map.put("2Anames5", info);
                 } else if (project.equals("女子1500米")) {
                     _2p8n = count;
+                    map.put("2Anames8", info);
                 } else if (project.equals("男子1500米")) {
                     _2p9n = count;
+                    map.put("2Anames9", info);
                 } else if (project.equals("男子铅球")) {
                     _2p12n = count;
+                    map.put("2Anames12", info);
                 }
                 /////////////////////////////
                 else if (project.equals("女子100米")) {
                     _3p1n = count;
+                    map.put("3Anames1", info);
                 } else if (project.equals("男子200米")) {
                     _3p3n = count;
+                    map.put("3Anames3", info);
                 } else if (project.equals("女子400米")) {
                     _3p7n = count;
+                    map.put("3Anames7", info);
                 } else if (project.equals("男子三级跳远")) {
                     _3p9n = count;
+                    map.put("3Anames9", info);
                 }
                 ///////////////////////////////////
 
                 else if (project.equals("女子4×100接力")) {
                     _4p1n = count;
+                    map.put("4Anames1", info);
                 } else if (project.equals("男子4×400接力")) {
                     _4p3n = count;
+                    map.put("4Anames3", info);
                 } else if (project.equals("男子跳远")) {
                     _4p5n = count;
+                    map.put("4Anames5", info);
                 } else if (project.equals("女子铅球")) {
                     _4p7n = count;
+                    map.put("4Anames7", info);
                 }
 
                 //////////////////////////////////////
                 else if (project.equals("男子4×100接力")) {
                     _5p1n = count;
+                    map.put("5Anames1", info);
                 } else if (project.equals("男子5000米")) {
                     _5p3n = count;
+                    map.put("5Anames3", info);
                 } else if (project.equals("女子跳高")) {
                     _5p5n = count;
+                    map.put("5Anames5", info);
                 }
 
 
@@ -499,62 +557,86 @@ public class WordServiceImpl implements WordService {
             }else if(group.equals("高职")){
                 if (project.equals("男子100米")) {
                     p1n = count;
+                    map.put("Anames1", info);
                 } else if (project.equals("女子200米")) {
                     p3n = count;
+                    map.put("Anames3", info);
                 } else if (project.equals("男子800米")) {
                     p5n = count;
+                    map.put("Anames5", info);
                 } else if (project.equals("女子800米")) {
                     p7n = count;
+                    map.put("Anames7", info);
                 } else if (project.equals("男子铅球")) {
                     p8n = count;
+                    map.put("Anames8", info);
                 }
                 //////////////////////////////////////
                 else if (project.equals("女子100米栏")) {
                     _2p2n = count;
+                    map.put("2Anames2", info);
                 } else if (project.equals("男子110米栏")) {
                     _2p4n = count;
+                    map.put("2Anames4", info);
                 } else if (project.equals("男子400米")) {
                     _2p6n = count;
+                    map.put("2Anames6", info);
                 } else if (project.equals("女子1500米")) {
                     _2p7n = count;
+                    map.put("2Anames7", info);
                 } else if (project.equals("男子1500米")) {
                     _2p10n = count;
+                    map.put("2Anames10", info);
                 } else if (project.equals("女子跳远")) {
                     _2p11n = count;
+                    map.put("2Anames11", info);
                 } else if (project.equals("男子跳高")) {
                     _2p13n = count;
+                    map.put("2Anames13", info);
                 }
                 ////////////////////////////////////////////
                 else if (project.equals("女子100米")) {
                     _3p2n = count;
+                    map.put("3Anames2", info);
                 } else if (project.equals("男子200米")) {
                     _3p4n = count;
+                    map.put("3Anames4", info);
                 } else if (project.equals("女子3000米")) {
                     _3p5n = count;
+                    map.put("3Anames5", info);
                 } else if (project.equals("男子5000米")) {
                     _3p6n = count;
+                    map.put("3Anames6", info);
                 } else if (project.equals("女子400米")) {
                     _3p8n = count;
+                    map.put("3Anames8", info);
                 } else if (project.equals("女子铅球")) {
                     _3p10n = count;
+                    map.put("3Anames10", info);
                 }
 
                 //////////////////////
                 else if (project.equals("女子4×100接力")) {
                     _4p2n = count;
+                    map.put("4Anames2", info);
                 } else if (project.equals("男子4×400接力")) {
                     _4p4n = count;
+                    map.put("4Anames4", info);
                 } else if (project.equals("男子跳远")) {
                     _4p6n = count;
+                    map.put("4Anames6", info);
                 } else if (project.equals("女子跳高")) {
                     _4p8n = count;
+                    map.put("4Anames8", info);
                 }
 
                 ///////////////////////////////
                 else if (project.equals("男子4×100接力")) {
                     _5p2n = count;
+                    map.put("5Anames2", info);
                 } else if (project.equals("男子三级跳远")) {
                     _5p4n = count;
+                    map.put("5Anames4", info);
                 }
             }else{
                 //todo 团体
@@ -584,7 +666,7 @@ public class WordServiceImpl implements WordService {
         calendar.add(Calendar.DAY_OF_MONTH, 1);
         Date day3 = calendar.getTime();
 
-        Map<String, String> map = new HashMap<String, String>();
+
         map.put("day_one_1", sdf.format(day1));
         map.put("day_one_2", sdf.format(day1));
         map.put("day_two_1", sdf.format(day2));
@@ -694,13 +776,16 @@ public class WordServiceImpl implements WordService {
 
             logger.info("生成9_竞赛日程.docx 成功");
         } else{
-            DocReplace.searchAndReplace(srcPath, destPath, map);
+            DocReplace.searchAndReplace2(srcPath, destPath, map);
             logger.info("生成10_分组分道表.docx 成功");
         }
 
     }
 
-    private void groupLine() {/*
+    private void groupLine() {
+
+        raceDate("D:\\words\\10_分组分道表_模板.docx","D:\\words\\10_分组分道表.docx");
+        /*
         try {
             //创建表格
             //Blank Document
@@ -770,6 +855,6 @@ public class WordServiceImpl implements WordService {
             logger.error("生成10_分组分道表.docx 失败",e);
         }*/
 
-        raceDate("D:\\words\\10_分组分道表_模板.docx","D:\\words\\10_分组分道表.docx");
+
     }
 }
