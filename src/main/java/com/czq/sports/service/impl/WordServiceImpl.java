@@ -47,16 +47,16 @@ public class WordServiceImpl implements WordService {
 
 
         //生成 7_参赛人员统计表
-//        numberStatistics();
+        numberStatistics();
 
         //生成8_号码对照表
-//        studentNo();
+        studentNo();
         //生成9_竞赛日程
-//        raceDate(null,null);
+        raceDate(null,null);
 
         //生成10_分组分道表
         groupLine();
-
+//
         String[] srcDocxs = {
                 "d:\\words\\0_目录.docx",
                 "d:\\words\\1_竞赛规程.docx",
@@ -75,7 +75,7 @@ public class WordServiceImpl implements WordService {
                 "d:\\words\\14_田径纪录.docx"
         };
         String destDocx = "d:\\words\\章程.docx";
-//        mergeDoc(srcDocxs, destDocx);
+        mergeDoc(srcDocxs, destDocx);
 
 
     }
@@ -268,7 +268,7 @@ public class WordServiceImpl implements WordService {
 
             doc.write(out);
             out.close();
-            System.out.println("create_table.docx written successully");
+            logger.info("创建7_参赛人员统计表.docx成功");
         } catch (IOException e) {
             logger.error("创建人数统计表格失败",e);
         }
@@ -406,7 +406,7 @@ public class WordServiceImpl implements WordService {
 
             doc.write(out);
             out.close();
-            System.out.println("生成8_号码对照表.docx 成功");
+            logger.info("生成8_号码对照表.docx 成功");
         } catch (IOException e) {
             logger.error("创建号码对照表失败",e);
         }
@@ -471,172 +471,212 @@ public class WordServiceImpl implements WordService {
             String info = nAthletes.toString()+";"+nNos.toString()+";"+nClasses.toString();
 
             if(group.equals("中职")){
-                if (project.equals("男子100米")) {
-                    p0n = count;
-                    map.put("Anames0", info);
-                } else if (project.equals("女子200米")) {
-                    p2n = count;
-                    map.put("Anames2", info);
-                } else if (project.equals("男子800米")) {
-                    p4n = count;
-                    map.put("Anames4", info);
-                } else if (project.equals("女子800米")) {
-                    p6n = count;
-                    map.put("Anames6", info);
-                } else if (project.equals("女子跳远")) {
-                    p9n = count;
-                    map.put("Anames9", info);
-                } else if (project.equals("男子跳高")) {
-                    p10n = count;
-                    map.put("Anames10", info);
-                }
-                /////////////////////////
-                else if (project.equals("女子100米栏")) {
-                    _2p1n = count;
-                    map.put("2Anames1", info);
-                } else if (project.equals("男子110米栏")) {
-                    _2p3n = count;
-                    map.put("2Anames3", info);
-                } else if (project.equals("男子400米")) {
-                    _2p5n = count;
-                    map.put("2Anames5", info);
-                } else if (project.equals("女子1500米")) {
-                    _2p8n = count;
-                    map.put("2Anames8", info);
-                } else if (project.equals("男子1500米")) {
-                    _2p9n = count;
-                    map.put("2Anames9", info);
-                } else if (project.equals("男子铅球")) {
-                    _2p12n = count;
-                    map.put("2Anames12", info);
-                }
-                /////////////////////////////
-                else if (project.equals("女子100米")) {
-                    _3p1n = count;
-                    map.put("3Anames1", info);
-                } else if (project.equals("男子200米")) {
-                    _3p3n = count;
-                    map.put("3Anames3", info);
-                } else if (project.equals("女子400米")) {
-                    _3p7n = count;
-                    map.put("3Anames7", info);
-                } else if (project.equals("男子三级跳远")) {
-                    _3p9n = count;
-                    map.put("3Anames9", info);
-                }
-                ///////////////////////////////////
+                switch (project) {
+                    case "男子100米":
+                        p0n = count;
+                        map.put("Ans0", info);
+                        break;
+                    case "女子200米":
+                        p2n = count;
+                        map.put("Ans2", info);
+                        break;
+                    case "男子800米":
+                        p4n = count;
+                        map.put("Ans4", info);
+                        break;
+                    case "女子800米":
+                        p6n = count;
+                        map.put("Ans6", info);
+                        break;
+                    case "女子跳远":
+                        p9n = count;
+                        map.put("Ans9", info);
+                        break;
+                    case "男子跳高":
+                        p10n = count;
+                        map.put("Ans10", info);
+                        break;
+                    /////////////////////////
+                    case "女子100米栏":
+                        _2p1n = count;
+                        map.put("2Ans1", info);
+                        break;
+                    case "男子110米栏":
+                        _2p3n = count;
+                        map.put("2Ans3", info);
+                        break;
+                    case "男子400米":
+                        _2p5n = count;
+                        map.put("2Ans5", info);
+                        break;
+                    case "女子1500米":
+                        _2p8n = count;
+                        map.put("2Ans8", info);
+                        break;
+                    case "男子1500米":
+                        _2p9n = count;
+                        map.put("2Ans9", info);
+                        break;
+                    case "男子铅球":
+                        _2p12n = count;
+                        map.put("2Ans12", info);
+                        break;
+                    /////////////////////////////
+                    case "女子100米":
+                        _3p1n = count;
+                        map.put("3Ans1", info);
+                        break;
+                    case "男子200米":
+                        _3p3n = count;
+                        map.put("3Ans3", info);
+                        break;
+                    case "女子400米":
+                        _3p7n = count;
+                        map.put("3Ans7", info);
+                        break;
+                    case "男子三级跳远":
+                        _3p9n = count;
+                        map.put("3Ans9", info);
+                        break;
+                    ///////////////////////////////////
+                    case "女子4×100接力":
+                        _4p1n = count;
+                        map.put("4Ans1", info);
+                        break;
+                    case "男子4×400接力":
+                        _4p3n = count;
+                        map.put("4Ans3", info);
+                        break;
+                    case "男子跳远":
+                        _4p5n = count;
+                        map.put("4Ans5", info);
+                        break;
+                    case "女子铅球":
+                        _4p7n = count;
+                        map.put("4Ans7", info);
+                        break;
 
-                else if (project.equals("女子4×100接力")) {
-                    _4p1n = count;
-                    map.put("4Anames1", info);
-                } else if (project.equals("男子4×400接力")) {
-                    _4p3n = count;
-                    map.put("4Anames3", info);
-                } else if (project.equals("男子跳远")) {
-                    _4p5n = count;
-                    map.put("4Anames5", info);
-                } else if (project.equals("女子铅球")) {
-                    _4p7n = count;
-                    map.put("4Anames7", info);
-                }
-
-                //////////////////////////////////////
-                else if (project.equals("男子4×100接力")) {
-                    _5p1n = count;
-                    map.put("5Anames1", info);
-                } else if (project.equals("男子5000米")) {
-                    _5p3n = count;
-                    map.put("5Anames3", info);
-                } else if (project.equals("女子跳高")) {
-                    _5p5n = count;
-                    map.put("5Anames5", info);
+                    //////////////////////////////////////
+                    case "男子4×100接力":
+                        _5p1n = count;
+                        map.put("5Ans1", info);
+                        break;
+                    case "男子5000米":
+                        _5p3n = count;
+                        map.put("5Ans3", info);
+                        break;
+                    case "女子跳高":
+                        _5p5n = count;
+                        map.put("5Ans5", info);
+                        break;
                 }
 
 
 
             }else if(group.equals("高职")){
-                if (project.equals("男子100米")) {
-                    p1n = count;
-                    map.put("Anames1", info);
-                } else if (project.equals("女子200米")) {
-                    p3n = count;
-                    map.put("Anames3", info);
-                } else if (project.equals("男子800米")) {
-                    p5n = count;
-                    map.put("Anames5", info);
-                } else if (project.equals("女子800米")) {
-                    p7n = count;
-                    map.put("Anames7", info);
-                } else if (project.equals("男子铅球")) {
-                    p8n = count;
-                    map.put("Anames8", info);
-                }
-                //////////////////////////////////////
-                else if (project.equals("女子100米栏")) {
-                    _2p2n = count;
-                    map.put("2Anames2", info);
-                } else if (project.equals("男子110米栏")) {
-                    _2p4n = count;
-                    map.put("2Anames4", info);
-                } else if (project.equals("男子400米")) {
-                    _2p6n = count;
-                    map.put("2Anames6", info);
-                } else if (project.equals("女子1500米")) {
-                    _2p7n = count;
-                    map.put("2Anames7", info);
-                } else if (project.equals("男子1500米")) {
-                    _2p10n = count;
-                    map.put("2Anames10", info);
-                } else if (project.equals("女子跳远")) {
-                    _2p11n = count;
-                    map.put("2Anames11", info);
-                } else if (project.equals("男子跳高")) {
-                    _2p13n = count;
-                    map.put("2Anames13", info);
-                }
-                ////////////////////////////////////////////
-                else if (project.equals("女子100米")) {
-                    _3p2n = count;
-                    map.put("3Anames2", info);
-                } else if (project.equals("男子200米")) {
-                    _3p4n = count;
-                    map.put("3Anames4", info);
-                } else if (project.equals("女子3000米")) {
-                    _3p5n = count;
-                    map.put("3Anames5", info);
-                } else if (project.equals("男子5000米")) {
-                    _3p6n = count;
-                    map.put("3Anames6", info);
-                } else if (project.equals("女子400米")) {
-                    _3p8n = count;
-                    map.put("3Anames8", info);
-                } else if (project.equals("女子铅球")) {
-                    _3p10n = count;
-                    map.put("3Anames10", info);
-                }
+                switch (project) {
+                    case "男子100米":
+                        p1n = count;
+                        map.put("Ans1", info);
+                        break;
+                    case "女子200米":
+                        p3n = count;
+                        map.put("Ans3", info);
+                        break;
+                    case "男子800米":
+                        p5n = count;
+                        map.put("Ans5", info);
+                        break;
+                    case "女子800米":
+                        p7n = count;
+                        map.put("Ans7", info);
+                        break;
+                    case "男子铅球":
+                        p8n = count;
+                        map.put("Ans8", info);
+                        break;
+                    //////////////////////////////////////
+                    case "女子100米栏":
+                        _2p2n = count;
+                        map.put("2Ans2", info);
+                        break;
+                    case "男子110米栏":
+                        _2p4n = count;
+                        map.put("2Ans4", info);
+                        break;
+                    case "男子400米":
+                        _2p6n = count;
+                        map.put("2Ans6", info);
+                        break;
+                    case "女子1500米":
+                        _2p7n = count;
+                        map.put("2Ans7", info);
+                        break;
+                    case "男子1500米":
+                        _2p10n = count;
+                        map.put("2Ans10", info);
+                        break;
+                    case "女子跳远":
+                        _2p11n = count;
+                        map.put("2Ans11", info);
+                        break;
+                    case "男子跳高":
+                        _2p13n = count;
+                        map.put("2Ans13", info);
+                        break;
+                    ////////////////////////////////////////////
+                    case "女子100米":
+                        _3p2n = count;
+                        map.put("3Ans2", info);
+                        break;
+                    case "男子200米":
+                        _3p4n = count;
+                        map.put("3Ans4", info);
+                        break;
+                    case "女子3000米":
+                        _3p5n = count;
+                        map.put("3Ans5", info);
+                        break;
+                    case "男子5000米":
+                        _3p6n = count;
+                        map.put("3Ans6", info);
+                        break;
+                    case "女子400米":
+                        _3p8n = count;
+                        map.put("3Ans8", info);
+                        break;
+                    case "女子铅球":
+                        _3p10n = count;
+                        map.put("3Ans10", info);
+                        break;
 
-                //////////////////////
-                else if (project.equals("女子4×100接力")) {
-                    _4p2n = count;
-                    map.put("4Anames2", info);
-                } else if (project.equals("男子4×400接力")) {
-                    _4p4n = count;
-                    map.put("4Anames4", info);
-                } else if (project.equals("男子跳远")) {
-                    _4p6n = count;
-                    map.put("4Anames6", info);
-                } else if (project.equals("女子跳高")) {
-                    _4p8n = count;
-                    map.put("4Anames8", info);
-                }
+                    //////////////////////
+                    case "女子4×100接力":
+                        _4p2n = count;
+                        map.put("4Ans2", info);
+                        break;
+                    case "男子4×400接力":
+                        _4p4n = count;
+                        map.put("4Ans4", info);
+                        break;
+                    case "男子跳远":
+                        _4p6n = count;
+                        map.put("4Ans6", info);
+                        break;
+                    case "女子跳高":
+                        _4p8n = count;
+                        map.put("4Ans8", info);
+                        break;
 
-                ///////////////////////////////
-                else if (project.equals("男子4×100接力")) {
-                    _5p2n = count;
-                    map.put("5Anames2", info);
-                } else if (project.equals("男子三级跳远")) {
-                    _5p4n = count;
-                    map.put("5Anames4", info);
+                    ///////////////////////////////
+                    case "男子4×100接力":
+                        _5p2n = count;
+                        map.put("5Ans2", info);
+                        break;
+                    case "男子三级跳远":
+                        _5p4n = count;
+                        map.put("5Ans4", info);
+                        break;
                 }
             }else{
                 //todo 团体

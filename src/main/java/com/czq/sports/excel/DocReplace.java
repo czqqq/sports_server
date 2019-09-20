@@ -88,7 +88,7 @@ public class DocReplace {
                         if (run.get(i).getText(run.get(i).getTextPosition()) != null &&
                                 run.get(i).getText(run.get(i).getTextPosition()).equals(key)) {
 
-                            if (key.contains("Anames")) {
+                            if (key.contains("Ans")) {
                                 String info = map.get(key);
                                 String[] detail = info.split(";");
                                 String athletes = detail[0];
@@ -112,23 +112,37 @@ public class DocReplace {
 
                                     int j=0,k=0,l=0;
                                     for (int i1 = 0; i1 < group; i1++) {
+
+                                        //编号
                                         as = new StringBuilder(" " + (i1 + 1) + "│\t");
                                         for (j = i1 * 8; j < (i1 + 1) * 8; j++) {
+                                            if (j == n.length) {
+                                                break;
+                                            }
                                             as.append(n[j]).append("\t");
                                         }
                                         run1.setText(as.toString(), 0);
                                         run1.addBreak();
 
+                                        // 姓名
                                         as = new StringBuilder("  │\t");
                                         for (k = i1 * 8; k < (i1 + 1) * 8; k++) {
+                                            if (k == a.length) {
+                                                break;
+                                            }
                                             as.append(a[k]).append("\t");
                                         }
                                         run1.setText(as.toString());
                                         run1.addBreak();
 
-                                        as = new StringBuilder("  │\t");
+
+                                        //班级
+                                        as = new StringBuilder("  │");
                                         for (l = i1 * 8; l < (i1 + 1) * 8; l++) {
-                                            as.append(c[l]).append("\t");
+                                            if (l == c.length) {
+                                                break;
+                                            }
+                                            as.append(c[l]);//.append("\t");
                                         }
                                         run1.setText(as.toString());
                                         run1.addBreak();
